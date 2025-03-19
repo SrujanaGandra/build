@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Authentication System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .auth-container {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .auth-form {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-form h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+            text-align: center;
+        }
+        
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+        
+        .auth-btn {
+            background-color: #4a6fdc;
+            border: none;
+            width: 100%;
+            padding: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .auth-btn:hover {
+            background-color: #3c5bb4;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .form-footer a {
+            color: #4a6fdc;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .form-message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .form-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .form-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        /* Dashboard styles */
+        .dashboard-container {
+            padding: 3rem 0;
+            display: none;
+        }
+        
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 2rem;
+            height: 100%;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-title {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .card-text {
+            flex-grow: 1;
+        }
+        
+        .card-footer {
+            background-color: transparent;
+            border-top: none;
+            padding-top: 0;
+        }
+        
+        .logout-btn {
+            margin-top: 1rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .auth-form {
+                padding: 1.5rem;
+                margin: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Registration Form -->
+    <div class="auth-container" id="registration-container">
+        <div class="auth-form">
+            <h2>Create Account</h2>
+            <div id="register-message" class="form-message"></div>
+            <form id="registration-form">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="register-fullname" placeholder="Full Name" required>
+                    <label for="register-fullname">Full Name</label>
+                </div>
+                
+                <div class="form-floating">
+                    <input type="email" class="form-control" id="register-email" placeholder="Email" required>
+                    <label for="register-email">Email</label>
+                </div>
+                
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="register-password" placeholder="Password" required>
+                    <label for="register-password">Password</label>
+                </div>
+                
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="register-confirm-password" placeholder="Confirm Password" required>
+                    <label for="register-confirm-password">Confirm Password</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-btn">Register</button>
+                
+                <div class="form-footer">
+                    <p>Already have an account? <a id="show-login">Login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="auth-container" id="login-container" style="display: none;">
+        <div class="auth-form">
+            <h2>Welcome Back</h2>
+            <div id="login-message" class="form-message"></div>
+            <form id="login-form">
+                <div class="form-floating">
+                    <input type="email" class="form-control" id="login-email" placeholder="Email" required>
+                    <label for="login-email">Email</label>
+                </div>
+                
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="login-password" placeholder="Password" required>
+                    <label for="login-password">Password</label>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="remember-me">
+                    <label class="form-check-label" for="remember-me">
+                        Remember me
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-btn">Login</button>
+                
+                <div class="form-footer">
+                    <p>Don't have an account? <a id="show-register">Sign up</a></p>
+                    <a href="#">Forgot password?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard with Cards -->
+    <div class="container dashboard-container" id="dashboard">
+        <div class="dashboard-header">
+            <h1>Welcome, <span id="user-name">User</span>!</h1>
+            <p class="text-muted">Choose a section to continue</p>
+        </div>
+        
+        <div class="row">
+            <!-- Profile Card -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">My Profile</h5>
+                        <p class="card-text">View and edit your personal information and account settings.</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-outline-primary w-100" onclick="redirectTo('profile')">Go to Profile</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Card -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Dashboard</h5>
+                        <p class="card-text">View your activity statistics and performance metrics.</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-outline-primary w-100" onclick="redirectTo('dashboard')">Go to Dashboard</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Card -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Settings</h5>
+                        <p class="card-text">Manage your notification preferences and privacy settings.</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-outline-primary w-100" onclick="redirectTo('settings')">Go to Settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <button id="logout-btn" class="btn btn-danger logout-btn">Logout</button>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // DOM Elements
+        const registrationContainer = document.getElementById('registration-container');
+        const loginContainer = document.getElementById('login-container');
+        const dashboard = document.getElementById('dashboard');
+        const showLoginLink = document.getElementById('show-login');
+        const showRegisterLink = document.getElementById('show-register');
+        const registrationForm = document.getElementById('registration-form');
+        const loginForm = document.getElementById('login-form');
+        const logoutBtn = document.getElementById('logout-btn');
+        const registerMessage = document.getElementById('register-message');
+        const loginMessage = document.getElementById('login-message');
+        const userName = document.getElementById('user-name');
+        
+        // Check if user is already logged in
+        function checkLoginStatus() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser) {
+                showDashboard(currentUser);
+            }
+        }
+        
+        // Toggle between login and registration forms
+        showLoginLink.addEventListener('click', function() {
+            registrationContainer.style.display = 'none';
+            loginContainer.style.display = 'flex';
+        });
+        
+        showRegisterLink.addEventListener('click', function() {
+            loginContainer.style.display = 'none';
+            registrationContainer.style.display = 'flex';
+        });
+        
+        // Registration form submission
+        registrationForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('register-fullname').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            
+            // Validation
+            if (password !== confirmPassword) {
+                showMessage(registerMessage, 'Passwords do not match', 'error');
+                return;
+            }
+            
+            // Check if user already exists
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const existingUser = users.find(user => user.email === email);
+            
+            if (existingUser) {
+                showMessage(registerMessage, 'Email already registered', 'error');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                fullName,
+                email,
+                password
+            };
+            
+            // Save to localStorage
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Set current user
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
+            
+            showMessage(registerMessage, 'Registration successful!', 'success');
+            
+            // Clear form
+            registrationForm.reset();
+            
+            // Show dashboard after short delay
+            setTimeout(() => {
+                showDashboard(newUser);
+            }, 1000);
+        });
+        
+        // Login form submission
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Get users from localStorage
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Find user with matching credentials
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Set current user
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                
+                showMessage(loginMessage, 'Login successful!', 'success');
+                
+                // Clear form
+                loginForm.reset();
+                
+                // Show dashboard after short delay
+                setTimeout(() => {
+                    showDashboard(user);
+                }, 1000);
+            } else {
+                showMessage(loginMessage, 'Invalid email or password', 'error');
+            }
+        });
+        
+        // Logout
+        logoutBtn.addEventListener('click', function() {
+            localStorage.removeItem('currentUser');
+            
+            dashboard.style.display = 'none';
+            loginContainer.style.display = 'flex';
+        });
+        
+        // Show message
+        function showMessage(element, message, type) {
+            element.textContent = message;
+            element.className = `form-message ${type}`;
+            
+            // Hide message after 3 seconds
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Show dashboard
+        function showDashboard(user) {
+            registrationContainer.style.display = 'none';
+            loginContainer.style.display = 'none';
+            dashboard.style.display = 'block';
+            
+            // Set user name
+            userName.textContent = user.fullName;
+        }
+        
+        // Redirect to page
+        function redirectTo(page) {
+            // In a real application, you would redirect to actual pages
+            // For this demo, we'll just show an alert
+            alert(`Redirecting to ${page} page...`);
+            
+            // You can also create actual page redirections like:
+            // window.location.href = `/${page}.html`;
+        }
+        
+        // Check login status on page load
+        checkLoginStatus();
+    </script>
+</body>
+</html>
